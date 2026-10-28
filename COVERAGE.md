@@ -34,7 +34,7 @@ Detected unsupported events stop conversion rather than disappearing from a succ
 - **Cached sync:** a fresh real-account download and subsequent cached sync produced byte-identical 4,124-row CSVs with exact asset balances. Reusing the earlier BTC-open snapshot fetched the later closing fill, refreshed the existing position summary and produced the same result as a full fresh download. Failure, account isolation, cache tampering and open-to-closed transitions also have automated coverage.
 - **Failure paths:** automated tests exercise incomplete pagination, source-hash changes, wrong account scope, inconsistent position components, asset mismatches and excluded activity.
 
-Private account history and UI evidence are not included in the repository. Bundled snapshots are fabricated and labelled synthetic. Run the test suite and demos in [README.md](README.md) to reproduce the offline checks.
+Private account history and UI evidence are not included in the repository. Bundled snapshots are fabricated and labelled synthetic. Run `python3 -m unittest discover -s tests -v` for the offline checks. Use `python3 examples/make_api_demo.py --help` for synthetic demo options.
 
 ## Integration findings
 
