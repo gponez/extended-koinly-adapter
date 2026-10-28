@@ -1,0 +1,193 @@
+{
+  "base_url": "https://api.starknet.extended.exchange/api/v1",
+  "started_at": "2026-10-28T08:38:27.452009+00:00",
+  "sources": {
+    "account": {
+      "endpoint": "/user/account/info",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "account.page-0001.json",
+          "sha256": "496452a4616fe3e587c7fd0dff4bcdbc417a7614ae0a0208694e9064ee055ca7",
+          "rows": 0
+        }
+      ],
+      "rows": 0,
+      "retrieval_complete": true
+    },
+    "balance": {
+      "endpoint": "/user/balance",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "balance.page-0001.json",
+          "sha256": "e4ee07cfabbe5208e9b3bb95aae56c6ac03b8e48d99ec92ec3e1b43f9663a712",
+          "rows": 0
+        }
+      ],
+      "rows": 0,
+      "retrieval_complete": true
+    },
+    "spot_balances": {
+      "endpoint": "/user/spot/balances",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "spot_balances.page-0001.json",
+          "sha256": "c9f771b773dac370b67e40f755af45d1b7fa194aaab4845960b8974cd99962fa",
+          "rows": 2
+        }
+      ],
+      "rows": 2,
+      "retrieval_complete": true
+    },
+    "markets": {
+      "endpoint": "/info/markets",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "markets.page-0001.json",
+          "sha256": "8b5f134305a493e0d68af2e3aecf74fce92105a76ae2a6e297ce3c590d0e99fa",
+          "rows": 1
+        }
+      ],
+      "rows": 1,
+      "retrieval_complete": true
+    },
+    "assets": {
+      "endpoint": "/info/assets",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "assets.page-0001.json",
+          "sha256": "5623a3442bf0b7d9cf7345426e56be35c5f03aa823849d1841d709109c336487",
+          "rows": 2
+        }
+      ],
+      "rows": 2,
+      "retrieval_complete": true
+    },
+    "open_positions": {
+      "endpoint": "/user/positions",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "open_positions.page-0001.json",
+          "sha256": "3eacd4672888b0db434380e796062b0ff921989fbe4a2f598f2a1b305c544a0a",
+          "rows": 1
+        }
+      ],
+      "rows": 1,
+      "retrieval_complete": true
+    },
+    "trades": {
+      "endpoint": "/user/trades",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "trades.page-0001.json",
+          "sha256": "ef025c1f218b695fc4689bc2c60befc7675b82bf358767c29a06471b183e303d",
+          "rows": 2
+        }
+      ],
+      "rows": 2,
+      "retrieval_complete": true
+    },
+    "funding": {
+      "endpoint": "/user/funding/history",
+      "parameters": {
+        "startTime": 0
+      },
+      "pages": [
+        {
+          "file": "funding.page-0001.json",
+          "sha256": "5f0cfb5a0498f54dff0517c56da479c96ad746e772348421dd32c9bc7b41374c",
+          "rows": 2
+        }
+      ],
+      "rows": 2,
+      "retrieval_complete": true
+    },
+    "positions_history": {
+      "endpoint": "/user/positions/history",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "positions_history.page-0001.json",
+          "sha256": "4fe7d3dec68dbc82697fb2e271b81f6be9c387d984b9180f33f5b8c7f76f1343",
+          "rows": 1
+        }
+      ],
+      "rows": 1,
+      "retrieval_complete": true
+    },
+    "asset_operations": {
+      "endpoint": "/user/assetOperations",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "asset_operations.page-0001.json",
+          "sha256": "39d0f4c7ccc086196e887ebbc9580c88f871c498762f0de2fce1876e85834a72",
+          "rows": 5
+        }
+      ],
+      "rows": 5,
+      "retrieval_complete": true
+    },
+    "asset_operations_v2": {
+      "endpoint": "/user/asset-operations",
+      "parameters": {
+        "accountId": 101
+      },
+      "pages": [
+        {
+          "file": "asset_operations_v2.page-0001.json",
+          "sha256": "8c487dac9629d59601b8925aaaa2263ea4c76255f59939f77f16456abd5f55a9",
+          "rows": 5
+        }
+      ],
+      "rows": 5,
+      "retrieval_complete": true
+    },
+    "rebates_stats": {
+      "endpoint": "/user/rebates/stats",
+      "parameters": {},
+      "pages": [
+        {
+          "file": "rebates_stats.page-0001.json",
+          "sha256": "4b96953dd9fa7fea8dfdda0691deff8ab44f2feb4ffebc2276af935803f9157c",
+          "rows": 0
+        }
+      ],
+      "rows": 0,
+      "retrieval_complete": true
+    },
+    "interest": {
+      "endpoint": "/interest/payments",
+      "parameters": {
+        "accountId": 101,
+        "interval": "ALL"
+      },
+      "pages": [
+        {
+          "file": "interest.page-0001.json",
+          "sha256": "cd93aa8b0924bacdfa94e482afc97157dd0724f0480941a08f0295b7feb93e25",
+          "rows": 0
+        }
+      ],
+      "rows": 0,
+      "retrieval_complete": true
+    }
+  },
+  "ledger_complete": false,
+  "limitations": [
+    "This is a sequential snapshot, not an atomic account snapshot.",
+    "Rebates API provides cumulative statistics, not dated rebate payments.",
+    "Interest uses interval=ALL; documentation does not describe pagination or retention.",
+    "Server retention and omitted event types still require reconciliation.",
+    "Current market metadata may not include historical or delisted markets."
+  ],
+  "account_id": 101,
+  "retrieval_complete": true,
+  "finished_at": "2026-10-28T08:38:27.453184+00:00"
+}

@@ -1,0 +1,18 @@
+{
+  "account_id": 101,
+  "opening_balances": {
+    "USD": "0",
+    "XVS": "0"
+  },
+  "opening_evidence": "Synthetic demo starts empty.",
+  "assets": {
+    "1": {
+      "name": "USD",
+      "koinly_symbol": "USDC"
+    },
+    "94": {
+      "name": "XVS",
+      "koinly_symbol": "NULL1"
+    }
+  }
+}

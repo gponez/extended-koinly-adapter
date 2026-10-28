@@ -1,0 +1,1 @@
+{"status": "OK", "data": [{"id": 1, "accountId": 101, "market": "DEMO-USD", "positionId": 99, "side": "SHORT", "size": "2", "fundingFee": "0.05", "paidTime": 1767225620000}, {"id": 2, "accountId": 101, "market": "DEMO-USD", "positionId": 99, "side": "SHORT", "size": "2", "fundingFee": "-0.03", "paidTime": 1767225625000}], "pagination": {"count": 2, "cursor": null}}

@@ -1,0 +1,235 @@
+{
+  "status": "FULL_AVAILABLE_ACCOUNT_HISTORY_RECONCILED",
+  "account_id": "101",
+  "snapshot_started_at": "2026-10-28T08:38:27.452009+00:00",
+  "snapshot_finished_at": "2026-10-28T08:38:27.453184+00:00",
+  "source_counts": {
+    "trades": 2,
+    "positions_history": 1,
+    "funding": 2,
+    "asset_operations": 5,
+    "asset_operations_v2": 5
+  },
+  "perps": {
+    "trade_count": 2,
+    "funding_count": 2,
+    "position_count": 1,
+    "event_count": 5,
+    "position_flips": 0,
+    "open_position_count": 1,
+    "closed_position_count": 0,
+    "unrealised_pnl_exported": false,
+    "same_millisecond_groups": 0,
+    "totals": {
+      "realized gain": "3.000000",
+      "futures fee": "-0.03",
+      "funding fee": "0.02"
+    },
+    "net_change": "2.990000",
+    "builder_fees_included_in_execution_fees": "0.010",
+    "reconciliation": "ALL_POSITION_COMPONENTS_EXACT",
+    "rounding": "Per-close PnL and flip fee allocations use ROUND_HALF_UP at 6 decimals; all position components must reconcile exactly.",
+    "opening_positions": "Zero; reconstruction checked against every supplied position lifecycle. Requires complete account history."
+  },
+  "interest": {
+    "status": "NO_PAYMENT_RECORDS",
+    "payment_count": 0,
+    "purpose": "Exclusion guard only; borrowing, repayment and interest export are unsupported."
+  },
+  "position_checks": [
+    {
+      "position_id": "99",
+      "market": "DEMO-USD",
+      "side": "SHORT",
+      "state": "OPEN",
+      "start": "2026-01-01T00:00:10+00:00",
+      "end": null,
+      "gross_pnl": "3.000000",
+      "open_fees": "-0.02",
+      "close_fees": "-0.01",
+      "funding": "0.02",
+      "net": "2.990000",
+      "trade_ids": [
+        "1",
+        "2"
+      ],
+      "funding_ids": [
+        "1",
+        "2"
+      ],
+      "source": "positions_history.page-0001.json#/data/0",
+      "result": "EXACT_MATCH",
+      "remaining_size": "1",
+      "remaining_signed_size": "-1",
+      "computed_entry_price": "100",
+      "api_entry_price": "100",
+      "entry_price_tolerance": "0",
+      "entry_price_residual": "0",
+      "entry_price_result": "EXACT",
+      "live_realised_pnl": "2.990000",
+      "unrealised_pnl_excluded": "-10",
+      "live_source": "open_positions.page-0001.json#/data/0",
+      "live_updated_at": "2026-01-01T00:01:00+00:00"
+    }
+  ],
+  "balance_checks": [
+    {
+      "asset": "USD",
+      "opening": "0",
+      "movement": "62.990000",
+      "computed": "62.990000",
+      "api_balance": "62.99",
+      "difference": "0",
+      "result": "EXACT_MATCH"
+    },
+    {
+      "asset": "XVS",
+      "opening": "0",
+      "movement": "32",
+      "computed": "32",
+      "api_balance": "32",
+      "difference": "0",
+      "result": "EXACT_MATCH"
+    }
+  ],
+  "balance_basis": "Settled collateral balance and asset quantities; excludes mark-to-market equity and unrealised PnL.",
+  "unrealised_pnl_excluded_from_csv": "-10",
+  "csv_rows": 10,
+  "economic_event_count": 10,
+  "asset_mapping": {
+    "1": {
+      "source_name": "USD",
+      "koinly_symbol": "USDC",
+      "is_vault_share": false,
+      "l1Id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "label": "USD"
+    },
+    "94": {
+      "source_name": "XVS",
+      "koinly_symbol": "NULL1",
+      "is_vault_share": true,
+      "l1Id": "synthetic-vault-share",
+      "label": "XVS"
+    }
+  },
+  "opening_balance_evidence": "Synthetic demo starts empty.",
+  "operations_audit": [
+    {
+      "event_id": "extended:101:operation:1",
+      "reason": "Bridge cost retained as metadata; not an additional account debit",
+      "source_fee": "0.01",
+      "chain": ""
+    }
+  ],
+  "koinly_import_tested": false,
+  "operation_source_reconciliation": [
+    {
+      "operation_id": "1",
+      "resolution": "matched_both",
+      "sources": [
+        {
+          "route": "legacy",
+          "source": "asset_operations.page-0001.json#/data/0",
+          "source_sha256": "39d0f4c7ccc086196e887ebbc9580c88f871c498762f0de2fce1876e85834a72"
+        },
+        {
+          "route": "modern",
+          "source": "asset_operations_v2.page-0001.json#/data/0",
+          "source_sha256": "8c487dac9629d59601b8925aaaa2263ea4c76255f59939f77f16456abd5f55a9"
+        }
+      ]
+    },
+    {
+      "operation_id": "2",
+      "resolution": "matched_both",
+      "sources": [
+        {
+          "route": "legacy",
+          "source": "asset_operations.page-0001.json#/data/1",
+          "source_sha256": "39d0f4c7ccc086196e887ebbc9580c88f871c498762f0de2fce1876e85834a72"
+        },
+        {
+          "route": "modern",
+          "source": "asset_operations_v2.page-0001.json#/data/1",
+          "source_sha256": "8c487dac9629d59601b8925aaaa2263ea4c76255f59939f77f16456abd5f55a9"
+        }
+      ]
+    },
+    {
+      "operation_id": "3",
+      "resolution": "matched_both",
+      "sources": [
+        {
+          "route": "legacy",
+          "source": "asset_operations.page-0001.json#/data/2",
+          "source_sha256": "39d0f4c7ccc086196e887ebbc9580c88f871c498762f0de2fce1876e85834a72"
+        },
+        {
+          "route": "modern",
+          "source": "asset_operations_v2.page-0001.json#/data/2",
+          "source_sha256": "8c487dac9629d59601b8925aaaa2263ea4c76255f59939f77f16456abd5f55a9"
+        }
+      ]
+    },
+    {
+      "operation_id": "4",
+      "resolution": "matched_both",
+      "sources": [
+        {
+          "route": "legacy",
+          "source": "asset_operations.page-0001.json#/data/3",
+          "source_sha256": "39d0f4c7ccc086196e887ebbc9580c88f871c498762f0de2fce1876e85834a72"
+        },
+        {
+          "route": "modern",
+          "source": "asset_operations_v2.page-0001.json#/data/3",
+          "source_sha256": "8c487dac9629d59601b8925aaaa2263ea4c76255f59939f77f16456abd5f55a9"
+        }
+      ]
+    },
+    {
+      "operation_id": "5",
+      "resolution": "matched_both",
+      "sources": [
+        {
+          "route": "legacy",
+          "source": "asset_operations.page-0001.json#/data/4",
+          "source_sha256": "39d0f4c7ccc086196e887ebbc9580c88f871c498762f0de2fce1876e85834a72"
+        },
+        {
+          "route": "modern",
+          "source": "asset_operations_v2.page-0001.json#/data/4",
+          "source_sha256": "8c487dac9629d59601b8925aaaa2263ea4c76255f59939f77f16456abd5f55a9"
+        }
+      ],
+      "transformation": {
+        "kind": "sender_to_recipient_projection",
+        "original": {
+          "accountId": 202,
+          "counterpartyAccountId": 101,
+          "amount": "-5"
+        },
+        "projected": {
+          "accountId": 101,
+          "counterpartyAccountId": 202,
+          "amount": "5"
+        }
+      }
+    }
+  ],
+  "modern_operation_history_present": true,
+  "limitations": [
+    "Covers the authenticated subaccount and all history returned by these APIs, not other accounts or external-wallet cost basis.",
+    "NULL placeholder must be unused in the destination Koinly account and reserved for Extended vault shares.",
+    "Vault entry/exit exports the observed two-asset exchange; jurisdiction-specific tax treatment is not inferred.",
+    "Bridge amounts preserve the exact Extended-account balance; external-wallet fee allocation and transfer matching remain to be checked.",
+    "Open positions require matching history/live IDs, exact realised components and remaining-size checks; unsettled mark-to-market values are never exported.",
+    "Borrowing, repayments and interest export are unsupported; any interest payment record stops conversion.",
+    "Separately paid rebates, spot fills and unknown event types stop conversion.",
+    "Liquidations, ADL, vault rewards and standalone vault-share credits are unsupported and stop conversion.",
+    "TxHash uses genuine hashes where supplied, otherwise namespaced exchange event IDs; these IDs are not blockchain transaction hashes.",
+    "Stable source IDs and UTC milliseconds remain in the ledger; Koinly CSV dates use seconds.",
+    "This generated CSV has not been automatically import-tested; consult the dated manual Koinly validation evidence for the exact file tested."
+  ],
+  "unique_operation_count": 5
+}

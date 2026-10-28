@@ -1,0 +1,178 @@
+{
+  "perpetuals": [
+    {
+      "event_id": "extended:101:fee:1",
+      "time": "2026-01-01T00:00:10+00:00",
+      "amount": "-0.02",
+      "currency": "USDC",
+      "tag": "futures fee",
+      "description": "DEMO-USD total execution fee (includes builder fee)",
+      "source": "trades.page-0001.json#/data/0",
+      "source_id": "trades:1",
+      "txhash": ""
+    },
+    {
+      "event_id": "extended:101:funding:1",
+      "time": "2026-01-01T00:00:20+00:00",
+      "amount": "0.05",
+      "currency": "USDC",
+      "tag": "funding fee",
+      "description": "DEMO-USD funding, position 99",
+      "source": "funding.page-0001.json#/data/0",
+      "source_id": "funding:1",
+      "txhash": ""
+    },
+    {
+      "event_id": "extended:101:funding:2",
+      "time": "2026-01-01T00:00:25+00:00",
+      "amount": "-0.03",
+      "currency": "USDC",
+      "tag": "funding fee",
+      "description": "DEMO-USD funding, position 99",
+      "source": "funding.page-0001.json#/data/1",
+      "source_id": "funding:2",
+      "txhash": ""
+    },
+    {
+      "event_id": "extended:101:fee:2",
+      "time": "2026-01-01T00:00:30+00:00",
+      "amount": "-0.01",
+      "currency": "USDC",
+      "tag": "futures fee",
+      "description": "DEMO-USD total execution fee (includes builder fee)",
+      "source": "trades.page-0001.json#/data/1",
+      "source_id": "trades:2",
+      "txhash": ""
+    },
+    {
+      "event_id": "extended:101:pnl:2",
+      "time": "2026-01-01T00:00:30+00:00",
+      "amount": "3.000000",
+      "currency": "USDC",
+      "tag": "realized gain",
+      "description": "DEMO-USD realised PnL on 1 closed contracts",
+      "source": "trades.page-0001.json#/data/1",
+      "source_id": "trades:2",
+      "txhash": ""
+    }
+  ],
+  "operations": [
+    {
+      "event_id": "extended:101:operation:1",
+      "time": "2026-01-01T00:00:01+00:00",
+      "kind": "DEPOSIT",
+      "movements": [
+        {
+          "asset_id": "1",
+          "asset": "USD",
+          "currency": "USDC",
+          "amount": "100"
+        }
+      ],
+      "tag": "",
+      "description": "Extended deposit",
+      "source": "asset_operations.page-0001.json#/data/0",
+      "source_id": "1",
+      "txhash": "",
+      "source_fee": "0.01",
+      "chain": "",
+      "counterparty_account": ""
+    },
+    {
+      "event_id": "extended:101:operation:2",
+      "time": "2026-01-01T00:00:02+00:00",
+      "kind": "VAULT_DEPOSIT",
+      "movements": [
+        {
+          "asset_id": "1",
+          "asset": "USD",
+          "currency": "USDC",
+          "amount": "-50"
+        },
+        {
+          "asset_id": "94",
+          "asset": "XVS",
+          "currency": "NULL1",
+          "amount": "40"
+        }
+      ],
+      "tag": "",
+      "description": "Extended vault_deposit",
+      "source": "asset_operations.page-0001.json#/data/1",
+      "source_id": "2",
+      "txhash": "",
+      "source_fee": "0",
+      "chain": "",
+      "counterparty_account": ""
+    },
+    {
+      "event_id": "extended:101:operation:3",
+      "time": "2026-01-01T00:00:50+00:00",
+      "kind": "VAULT_WITHDRAWAL",
+      "movements": [
+        {
+          "asset_id": "1",
+          "asset": "USD",
+          "currency": "USDC",
+          "amount": "10"
+        },
+        {
+          "asset_id": "94",
+          "asset": "XVS",
+          "currency": "NULL1",
+          "amount": "-8"
+        }
+      ],
+      "tag": "",
+      "description": "Extended vault_withdrawal",
+      "source": "asset_operations.page-0001.json#/data/2",
+      "source_id": "3",
+      "txhash": "",
+      "source_fee": "0",
+      "chain": "",
+      "counterparty_account": ""
+    },
+    {
+      "event_id": "extended:101:operation:4",
+      "time": "2026-01-01T00:00:55+00:00",
+      "kind": "TRANSFER",
+      "movements": [
+        {
+          "asset_id": "1",
+          "asset": "USD",
+          "currency": "USDC",
+          "amount": "-5"
+        }
+      ],
+      "tag": "",
+      "description": "Extended transfer",
+      "source": "asset_operations.page-0001.json#/data/3",
+      "source_id": "4",
+      "txhash": "",
+      "source_fee": "0",
+      "chain": "",
+      "counterparty_account": "202"
+    },
+    {
+      "event_id": "extended:101:operation:5",
+      "time": "2026-01-01T00:00:56+00:00",
+      "kind": "TRANSFER",
+      "movements": [
+        {
+          "asset_id": "1",
+          "asset": "USD",
+          "currency": "USDC",
+          "amount": "5"
+        }
+      ],
+      "tag": "",
+      "description": "Extended transfer",
+      "source": "asset_operations.page-0001.json#/data/4",
+      "source_id": "5",
+      "txhash": "",
+      "source_fee": "0",
+      "chain": "",
+      "counterparty_account": "202"
+    }
+  ]
+}

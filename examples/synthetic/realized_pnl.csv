@@ -1,0 +1,2 @@
+market,side,size,entry_price,realised_pnl,trade_pnl,funding_fees,trading_fees,exit_price,exit_type,closed_at
+DEMO-USD,SHORT,1,100,4.98,5,0.02,-0.04,97.5,TRADE,2026-06-02T13:00:00.007Z

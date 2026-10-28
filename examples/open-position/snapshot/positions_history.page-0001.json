@@ -1,0 +1,1 @@
+{"status": "OK", "data": [{"id": 99, "accountId": 101, "market": "DEMO-USD", "side": "SHORT", "createdTime": 1767225610005, "exitType": "TRADE", "realisedPnl": "2.99", "realisedPnlBreakdown": {"tradePnl": "3", "openFees": "-0.02", "closeFees": "-0.01", "fundingFees": "0.02"}, "size": "1", "openPrice": "100"}], "pagination": {"count": 1, "cursor": null}}

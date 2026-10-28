@@ -1,0 +1,2 @@
+type,status,status_reason,amount,cost,asset,amount2,asset2,account,counterparty_account,transaction_hash,chain,time
+TRANSFER,COMPLETED,,-25,0,USD,,,demo-source,demo-account,,,2026-06-02T08:00:00.000Z
