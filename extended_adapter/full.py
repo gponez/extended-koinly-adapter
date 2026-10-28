@@ -32,7 +32,7 @@ def operation_csv(event):
     # Koinly's TxHash column accepts a transaction unique ID. A namespaced
     # exchange event ID is explicitly distinguishable from a blockchain hash.
     row['TxHash'] = event['txhash'] or event['event_id']
-    row['Description'] = f"{event['description']} [{event['event_id']}]"
+    row['Description'] = event['description']
     row['Tag'] = event.get('tag', '')
     for leg in event['movements']:
         amount = dec(leg['amount'])
@@ -112,7 +112,6 @@ def build_full(directory, config):
         for event in cash_events:
             row = koinly_row(event)
             row['TxHash'] = event['event_id']
-            row['Description'] = f"Extended {event['description']} [{event['event_id']}]"
             csv_rows.append((event['time'], event['event_id'], row))
         for event in operations:
             csv_rows.append((event['time'], event['event_id'], operation_csv(event)))

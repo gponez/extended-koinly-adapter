@@ -4,6 +4,6 @@
   "opening_evidence": "Replace with reviewed opening balances; the converter requires exact closing balances.",
   "assets": {
     "1": {"name": "USD", "koinly_symbol": "USDC", "label": "USDC collateral; contract identity is validated"},
-    "94": {"name": "XVS", "koinly_symbol": "NULL1", "label": "Extended Vault Shares; NULL1 must be unused in Koinly"}
+    "94": {"name": "XVS", "koinly_symbol": "NULL1", "label": "Extended Vault Shares (EXT-XVS)"}
   }
 }

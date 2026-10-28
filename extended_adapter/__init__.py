@@ -1,1 +1,1 @@
-"""Auditable Extended CSV to Koinly prototype. No third-party dependencies."""
+"""Auditable Extended API to Koinly adapter. No third-party dependencies."""

@@ -6,7 +6,7 @@
       "amount": "-0.02",
       "currency": "USDC",
       "tag": "futures fee",
-      "description": "DEMO-USD total execution fee (includes builder fee)",
+      "description": "DEMO-USD trading fee",
       "source": "trades.page-0001.json#/data/0",
       "source_id": "trades:1",
       "txhash": ""
@@ -17,7 +17,7 @@
       "amount": "0.05",
       "currency": "USDC",
       "tag": "funding fee",
-      "description": "DEMO-USD funding, position 99",
+      "description": "DEMO-USD funding received",
       "source": "funding.page-0001.json#/data/0",
       "source_id": "funding:1",
       "txhash": ""
@@ -28,7 +28,7 @@
       "amount": "-0.03",
       "currency": "USDC",
       "tag": "funding fee",
-      "description": "DEMO-USD funding, position 99",
+      "description": "DEMO-USD funding paid",
       "source": "funding.page-0001.json#/data/1",
       "source_id": "funding:2",
       "txhash": ""
@@ -39,7 +39,7 @@
       "amount": "-0.01",
       "currency": "USDC",
       "tag": "futures fee",
-      "description": "DEMO-USD total execution fee (includes builder fee)",
+      "description": "DEMO-USD trading fee",
       "source": "trades.page-0001.json#/data/1",
       "source_id": "trades:2",
       "txhash": ""
@@ -50,7 +50,7 @@
       "amount": "3.000000",
       "currency": "USDC",
       "tag": "realized gain",
-      "description": "DEMO-USD realised PnL on 1 closed contracts",
+      "description": "DEMO-USD realised trading profit",
       "source": "trades.page-0001.json#/data/1",
       "source_id": "trades:2",
       "txhash": ""
@@ -70,7 +70,7 @@
         }
       ],
       "tag": "",
-      "description": "Extended deposit",
+      "description": "Extended: Deposit of USDC",
       "source": "asset_operations.page-0001.json#/data/0",
       "source_id": "1",
       "txhash": "",
@@ -97,7 +97,7 @@
         }
       ],
       "tag": "",
-      "description": "Extended vault_deposit",
+      "description": "Extended: Deposited USDC into the vault; received EXT-XVS shares",
       "source": "asset_operations.page-0001.json#/data/1",
       "source_id": "2",
       "txhash": "",
@@ -124,7 +124,7 @@
         }
       ],
       "tag": "",
-      "description": "Extended vault_withdrawal",
+      "description": "Extended: Redeemed EXT-XVS shares for USDC",
       "source": "asset_operations.page-0001.json#/data/2",
       "source_id": "3",
       "txhash": "",
@@ -145,7 +145,7 @@
         }
       ],
       "tag": "",
-      "description": "Extended transfer",
+      "description": "Extended: Transfer of USDC to subaccount 202",
       "source": "asset_operations.page-0001.json#/data/3",
       "source_id": "4",
       "txhash": "",
@@ -166,7 +166,7 @@
         }
       ],
       "tag": "",
-      "description": "Extended transfer",
+      "description": "Extended: Transfer of USDC from subaccount 202",
       "source": "asset_operations.page-0001.json#/data/4",
       "source_id": "5",
       "txhash": "",

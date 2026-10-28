@@ -43,8 +43,8 @@ class ExampleTests(unittest.TestCase):
                                        if item['operation_id'] == '5')
                     self.assertEqual(transferred['resolution'], 'matched_both')
                     self.assertEqual(transferred['transformation']['kind'], 'sender_to_recipient_projection')
-                    transfer_rows = [row for row in rows if ':operation:4' in row['Description']
-                                     or ':operation:5' in row['Description']]
+                    transfer_rows = [row for row in rows if ':operation:4' in row['TxHash']
+                                     or ':operation:5' in row['TxHash']]
                     self.assertEqual(len(transfer_rows), 2)
                     self.assertTrue(all(row['Tag'] == '' for row in transfer_rows))
 

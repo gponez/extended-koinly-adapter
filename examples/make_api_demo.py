@@ -85,6 +85,7 @@ if __name__ == '__main__':
     config = {'account_id': ACCOUNT, 'opening_balances': {'USD': '0', 'XVS': '0'},
               'opening_evidence': 'Synthetic demo starts empty.',
               'assets': {'1': {'name': 'USD', 'koinly_symbol': 'USDC'},
-                         '94': {'name': 'XVS', 'koinly_symbol': 'NULL1'}}}
+                         '94': {'name': 'XVS', 'koinly_symbol': 'NULL1',
+                                'label': 'Extended Vault Shares (EXT-XVS)'}}}
     (Path(args.output)/'config.json').write_text(json.dumps(config, indent=2)+'\n')
     print('Synthetic snapshot created. No network or account credentials used.')

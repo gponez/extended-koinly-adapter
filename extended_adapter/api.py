@@ -15,6 +15,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
+from .snapshot import load_snapshot
+
 BASE_URL = "https://api.starknet.extended.exchange/api/v1"
 SOURCES = (
     ("account", "/user/account/info", False),
@@ -62,7 +64,7 @@ class ReadOnlyClient:
         url = BASE_URL + path + ("?" + query if query else "")
         request = Request(url, headers={
             "X-Api-Key": self._api_key,
-            "User-Agent": "extended-koinly-adapter/0.1 (read-only snapshot)",
+            "User-Agent": "extended-koinly-adapter/0.2 (read-only snapshot)",
             "Accept": "application/json",
         }, method="GET")
         for attempt in range(3):
@@ -126,7 +128,8 @@ def _collect_resource(client, directory, name, path, paginated, params, max_page
                 raise SnapshotError("expected_items_list")
             filename = f"{name}.page-{number:04d}.json"
             digest = _write_private(directory / filename, text)
-            result["pages"].append({"file": filename, "sha256": digest, "rows": len(rows)})
+            result["pages"].append({"file": filename, "sha256": digest, "rows": len(rows),
+                                    "request_parameters": dict(params)})
             result["rows"] += len(rows)
             if not paginated:
                 # Undocumented pagination must not be silently ignored.
@@ -165,12 +168,135 @@ def _collect_resource(client, directory, name, path, paginated, params, max_page
     return result
 
 
+def _ordered_ids(rows, previous=None):
+    ids = []
+    for row in rows:
+        value = row.get("id") if isinstance(row, dict) else None
+        if (isinstance(value, bool) or not isinstance(value, (str, int))
+                or not str(value).isascii() or not str(value).isdigit()):
+            raise SnapshotError("cache_invalid_id")
+        identity = int(value)
+        if previous is not None and identity >= previous:
+            raise SnapshotError("cache_history_not_descending")
+        ids.append(identity)
+        previous = identity
+    return ids
+
+
+def _history_page(text, previous=None):
+    payload = _decode(text)
+    rows, pagination = payload["data"], payload.get("pagination")
+    if not isinstance(rows, list) or not isinstance(pagination, dict):
+        raise SnapshotError("cache_invalid_page")
+    if pagination.get("count") != len(rows):
+        raise SnapshotError("pagination_count_mismatch")
+    ids = _ordered_ids(rows, previous)
+    cursor = pagination.get("cursor")
+    if cursor is not None:
+        if (not ids or isinstance(cursor, bool) or not isinstance(cursor, (str, int))
+                or str(cursor) != str(ids[-1])):
+            raise SnapshotError("cache_invalid_cursor")
+    return rows, ids, cursor
+
+
+def _collect_cached_resource(client, directory, name, path, params, max_pages,
+                             cache_root, baseline_rows, baseline_source, manifest_hash):
+    """Join fresh API pages to verified raw history at an unchanged overlap."""
+    result = {"endpoint": path, "parameters": dict(params), "pages": [],
+              "rows": 0, "retrieval_complete": False}
+
+    def save(text, request_parameters=None, reused=False):
+        filename = f"{name}.page-{len(result['pages']) + 1:04d}.json"
+        digest = _write_private(directory / filename, text)
+        count = len(_decode(text)["data"])
+        page = {"file": filename, "sha256": digest, "rows": count}
+        if request_parameters is not None:
+            page["request_parameters"] = dict(request_parameters)
+        if reused:
+            page["reused"] = True
+        result["pages"].append(page)
+        result["rows"] += count
+
+    try:
+        baseline_ids = _ordered_ids(baseline_rows)
+        if (baseline_source.get("parameters") != params
+                or baseline_source.get("endpoint") != path):
+            raise SnapshotError("cache_source_mismatch")
+        head = baseline_ids[0]
+        previous, requests = None, 0
+        while requests < max_pages:
+            text = client.get(path, params)
+            requests += 1
+            rows, ids, cursor = _history_page(text, previous)
+            offset = next((i for i, identity in enumerate(ids) if identity <= head), len(ids))
+            if offset == len(ids):
+                if cursor is None:
+                    raise SnapshotError("cache_boundary_missing")
+                save(text, params)
+                previous = ids[-1]
+                params = {**params, "cursor": cursor}
+                continue
+            overlap = [{k: v for k, v in row.items() if k not in ("_source", "_source_hash")}
+                       for row in baseline_rows[:len(rows) - offset]]
+            if ids[offset] != head or rows[offset:] != overlap:
+                raise SnapshotError("cache_overlap_changed")
+            if cursor is None and len(rows) - offset != len(baseline_rows):
+                raise SnapshotError("cache_history_truncated")
+            filename = f"{name}.overlap.json"
+            probe = {"file": filename, "sha256": _write_private(directory / filename, text),
+                     "request_parameters": dict(params)}
+            probe_offset = result["rows"]
+            if offset:
+                if requests >= max_pages:
+                    raise SnapshotError("page_limit_reached")
+                prefix = client.get(path, {**params, "limit": offset})
+                requests += 1
+                prefix_rows, _, prefix_cursor = _history_page(prefix, previous)
+                if prefix_rows != rows[:offset] or str(prefix_cursor) != str(ids[offset - 1]):
+                    raise SnapshotError("cache_prefix_changed")
+                save(prefix, {**params, "limit": offset})
+            new_rows = result["rows"]
+            for page in baseline_source["pages"]:
+                raw = (cache_root / page["file"]).read_bytes()
+                if hashlib.sha256(raw).hexdigest() != page["sha256"]:
+                    raise SnapshotError("cache_hash_mismatch")
+                save(raw.decode("utf-8"), page.get("request_parameters"), reused=True)
+            result["cache"] = {"baseline_manifest_sha256": manifest_hash,
+                               "probe": probe, "probe_offset": probe_offset,
+                               "new_rows": new_rows, "reused_rows": len(baseline_rows)}
+            joins = [{"probe": probe, "probe_offset": probe_offset, "new_rows": new_rows}]
+            prior = baseline_source.get("cache_joins")
+            if prior is None:
+                prior = [baseline_source["cache"]] if "cache" in baseline_source else []
+            for number, join in enumerate(prior, 1):
+                original = join["probe"]
+                raw = (cache_root / original["file"]).read_bytes()
+                if hashlib.sha256(raw).hexdigest() != original["sha256"]:
+                    raise SnapshotError("cache_hash_mismatch")
+                filename = f"{name}.join-{number:04d}.json"
+                copied = {**original, "file": filename,
+                          "sha256": _write_private(directory / filename, raw.decode("utf-8"))}
+                joins.append({"probe": copied, "probe_offset": join["probe_offset"] + new_rows,
+                              "new_rows": join["new_rows"] + new_rows})
+            result["cache_joins"] = joins
+            result["retrieval_complete"] = baseline_source["retrieval_complete"] is True
+            return result
+        raise SnapshotError("page_limit_reached")
+    except SnapshotError as exc:
+        result["error"] = str(exc)
+    except Exception:
+        result["error"] = "unexpected_collection_error"
+    return result
+
+
 def collect_snapshot(output_dir, api_key, start_time_ms=0, *, max_pages=10000,
-                     client=None):
+                     client=None, cache_dir=None):
     """Save API evidence for one authenticated account and return its manifest.
 
     ``output_dir`` must be new. ``start_time_ms`` only filters funding; other
     histories are fetched in full. ``client`` is a test hook with get(path, params).
+    ``cache_dir`` reuses verified trades/funding pages after an unchanged overlap;
+    mutable account state and other histories are always fetched again.
     Success means pagination finished, not that a tax ledger is complete. No
     authenticated network requests are made unless this function is called.
     """
@@ -178,6 +304,22 @@ def collect_snapshot(output_dir, api_key, start_time_ms=0, *, max_pages=10000,
         raise ValueError("start_time_ms must be a nonnegative integer")
     if type(max_pages) is not int or max_pages < 1:
         raise ValueError("max_pages must be a positive integer")
+    baseline, cache_root, baseline_manifest, manifest_hash = None, None, None, None
+    if cache_dir is not None:
+        if start_time_ms != 0:
+            raise SnapshotError("cache_requires_full_funding_history")
+        cache_root = Path(cache_dir)
+        try:
+            baseline, baseline_manifest = load_snapshot(cache_root)
+            manifest_hash = hashlib.sha256((cache_root / "manifest.json").read_bytes()).hexdigest()
+        except Exception:
+            raise SnapshotError("cache_invalid_snapshot") from None
+        for name, path, _ in SOURCES:
+            if name in ("trades", "funding"):
+                source = baseline_manifest["sources"][name]
+                expected = {"startTime": 0} if name == "funding" else {}
+                if source.get("endpoint") != path or source.get("parameters") != expected:
+                    raise SnapshotError("cache_source_mismatch")
     client = client or ReadOnlyClient(api_key)
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=False, mode=0o700)
@@ -203,7 +345,12 @@ def collect_snapshot(output_dir, api_key, start_time_ms=0, *, max_pages=10000,
             params = {"accountId": account_id}
             if name == "interest":
                 params["interval"] = "ALL"
-        result = _collect_resource(client, directory, name, path, paginated, params, max_pages)
+        if baseline is not None and name in ("trades", "funding") and baseline[name]:
+            result = _collect_cached_resource(
+                client, directory, name, path, params, max_pages, cache_root,
+                baseline[name], baseline_manifest["sources"][name], manifest_hash)
+        else:
+            result = _collect_resource(client, directory, name, path, paginated, params, max_pages)
         manifest["sources"][name] = result
         if name == "account" and result["retrieval_complete"]:
             info = _decode((directory / result["pages"][0]["file"]).read_text())
@@ -211,6 +358,11 @@ def collect_snapshot(output_dir, api_key, start_time_ms=0, *, max_pages=10000,
             if isinstance(value, (int, str)) and not isinstance(value, bool):
                 account_id = value
                 manifest["account_id"] = value
+        if name == "account" and baseline is not None:
+            cached_id = baseline.get("account", {}).get("accountId")
+            if (account_id is None or str(account_id) != str(cached_id)
+                    or str(account_id) != str(baseline_manifest.get("account_id"))):
+                raise SnapshotError("account_mismatch")
     manifest["retrieval_complete"] = all(x["retrieval_complete"] for x in manifest["sources"].values())
     manifest["finished_at"] = datetime.now(timezone.utc).isoformat()
     _write_private(directory / "manifest.json", json.dumps(manifest, indent=2) + "\n")

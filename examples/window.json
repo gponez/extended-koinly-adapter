@@ -1,9 +1,0 @@
-{
-  "account_id": "demo-account",
-  "start": "2026-06-01T00:00:00Z",
-  "end": "2026-06-03T00:00:00Z",
-  "opening_positions": "flat",
-  "opening_evidence": "Synthetic fixture explicitly starts flat. Replace with reviewed real evidence.",
-  "settlement_asset": "USDC",
-  "markets": {"DEMO-USD": "PERPETUAL"}
-}

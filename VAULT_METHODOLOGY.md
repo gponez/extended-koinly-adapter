@@ -20,7 +20,7 @@ Extended distinguishes base yield reflected in share price from extra yield paid
 
 ## Asset identity
 
-Extended XVS must not be mapped to Venus XVS. Configure an unused Koinly `NULLx` placeholder and reserve it exclusively for these shares across relevant subaccounts. A placeholder preserves units but does not supply market prices or determine tax policy.
+Extended XVS must not be mapped to Venus XVS. Descriptions and mapping labels call it **Extended Vault Shares (EXT-XVS)**. The CSV currency remains an unused Koinly `NULLx` placeholder, reserved exclusively across relevant subaccounts. Koinly requires a recognized currency or a [placeholder for unsupported assets](https://support.koinly.io/en/articles/9490012-errors-when-importing-transactions); writing `EXT-XVS` as the currency would fail import. A placeholder preserves units but does not supply market prices or determine tax policy.
 
 ## Valuation
 

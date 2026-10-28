@@ -13,6 +13,24 @@ from .core import ValidationError, dec, fmt
 USDC_ETH = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 
 
+def _display_asset(asset):
+    if asset.get('isVaultShare'):
+        return f'EXT-{asset["name"]}'
+    return 'USDC' if asset['name'] == 'USD' else asset['name']
+
+
+def _description(kind, amount, asset, counterparty):
+    if kind == 'VAULT_DEPOSIT':
+        return f'Extended: Deposited USDC into the vault; received {asset} shares'
+    if kind == 'VAULT_WITHDRAWAL':
+        return f'Extended: Redeemed {asset} shares for USDC'
+    if kind == 'TRANSFER':
+        direction = 'from' if amount > 0 else 'to'
+        return f'Extended: Transfer of {asset} {direction} subaccount {counterparty}'
+    action = 'Deposit' if kind == 'DEPOSIT' else 'Withdrawal'
+    return f'Extended: {action} of {asset}'
+
+
 def _reviewed_spot_identity(asset, mapping, symbol):
     """Allow asset movements without pretending a ticker establishes identity."""
     if asset.get('type') != 'SPOT':
@@ -112,9 +130,11 @@ def normalize_operations(operations, assets, account_id, mappings, *, operation_
                 _reviewed_spot_identity(asset, mapping, symbol)
             if any(a != asset_id and m['koinly_symbol'] == symbol for a, m in used.items()):
                 raise ValidationError('Multiple assets map to the same Koinly currency')
+            default_label = (f'Extended Vault Shares ({_display_asset(asset)})'
+                             if asset.get('isVaultShare') else _display_asset(asset))
             used[asset_id] = {'source_name': asset['name'], 'koinly_symbol': symbol,
                               'is_vault_share': bool(asset.get('isVaultShare')), 'l1Id': asset.get('l1Id'),
-                              'label': mapping.get('label', asset['name'])}
+                              'label': mapping.get('label', default_label)}
             if asset.get('arcAddress'):
                 used[asset_id]['arcAddress'] = asset['arcAddress']
             movements.append({'asset_id': asset_id, 'asset': asset['name'], 'currency': symbol, 'amount': fmt(value)})
@@ -131,8 +151,10 @@ def normalize_operations(operations, assets, account_id, mappings, *, operation_
             else:
                 raise ValidationError('Standalone vault-share withdrawal is not a reviewed redemption or liquidation')
         event_id = f'extended:{account_id}:operation:{row["id"]}'
+        display_asset = _display_asset(asset_by_id[legs[1 if vault else 0][0]])
+        description = _description(kind, amount, display_asset, row.get('counterpartyAccountId'))
         events.append({'event_id': event_id, 'time': iso_ms(row['time']), 'kind': kind,
-                       'movements': movements, 'tag': '', 'description': f'Extended {kind.lower()}',
+                       'movements': movements, 'tag': '', 'description': description,
                        'source': row.get('_source', f'asset_operations:{row["id"]}'),
                        'source_id': str(row['id']), 'txhash': row.get('transactionHash', ''),
                        'source_fee': fmt(fee), 'chain': row.get('chain', ''),

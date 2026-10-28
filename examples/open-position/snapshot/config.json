@@ -12,7 +12,8 @@
     },
     "94": {
       "name": "XVS",
-      "koinly_symbol": "NULL1"
+      "koinly_symbol": "NULL1",
+      "label": "Extended Vault Shares (EXT-XVS)"
     }
   }
 }

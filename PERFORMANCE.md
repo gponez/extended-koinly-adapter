@@ -16,9 +16,15 @@ These are historical measurements from 28 October 2026, not a performance guaran
 
 The core release converted the same 100,000-fill fixture into 150,001 rows in **2.008 seconds median** across three local runs (2.125, 1.975 and 2.008 seconds), with about 718 MiB peak process memory. This is a regression check, not a new matched speedup claim. The verified real-account CSVs also remain byte-identical after removing experimental activity support.
 
+## Cached sync check
+
+The API-only revision retained the reconstruction optimizations. A repeat of the 100,000-fill, 150,001-row export measured **3.887 seconds median** (3.679, 3.887, 3.969 seconds), with about 542 MiB peak process memory. The previous release measured 3.795 seconds median for the same workload in this session. An earlier repeat of the new revision measured 4.285 seconds; these timings vary with local conditions and do not demonstrate a CPU speedup.
+
+For the real account, an unchanged cached run reduced total API requests from **29 to 19**, including fills/funding requests from **12 to 2**. Collection took 18.5 seconds initially and 10.8 seconds when cached. Both exports were byte-identical. These are single live observations; network latency varies. A separate check fetched one new closing fill against a prior open-position snapshot and matched a complete fresh download.
+
 ## Limits
 
-The complete snapshot and intermediate representations remain in memory. Large exports are not streamed, resumable or incrementally synchronized. The historical five-run 100,000-fill benchmark reached about 871 MiB peak process memory; this includes allocator high-water effects across repeated conversions. API pagination and completeness are validated, but upstream retention cannot be guaranteed.
+The complete snapshot and intermediate representations remain in memory. Cached sync reduces repeated fills/funding downloads, while every run still reconstructs the complete history. Other endpoints are fetched in full. Exports are not streamed and interrupted fetches do not resume. The historical five-run 100,000-fill benchmark reached about 871 MiB peak process memory; this includes allocator high-water effects across repeated conversions. API pagination and completeness are validated, but upstream retention cannot be guaranteed.
 
 ## Reproduce offline
 

@@ -207,7 +207,7 @@ def _replay_trades(trades, account, snapshot_time_ms):
         market = row['market']
         signed = quantity if row['side'] == 'BUY' else -quantity
         cycle = active.get(market)
-        fee_description = f'{market} total execution fee (includes builder fee)'
+        fee_description = f'{market} trading fee'
         _emit(events, account, row, 'fee', ms, -fee, 'futures fee', fee_description)
         if cycle is None:
             active[market] = _new_cycle(row, signed, fee, price, ms)
@@ -225,7 +225,7 @@ def _replay_trades(trades, account, snapshot_time_ms):
         gross = ((price-cycle.average)*closing*(1 if cycle.qty > 0 else -1)).quantize(MICRO, rounding=ROUND_HALF_UP)
         cycle.gross += gross
         cycle.close_fees -= closing_fee
-        description = f'{market} realised PnL on {fmt(closing)} closed contracts'
+        description = f'{market} realised trading {"profit" if gross > 0 else "loss"}'
         _emit(events, account, row, 'pnl', ms, gross, 'realized gain', description)
         cycle.qty += closing*(1 if signed > 0 else -1)
         cycle.record_quantity(ms)
@@ -291,7 +291,8 @@ def _apply_funding(funding, by_position, events, account, snapshot_time_ms):
         cycle.funding += amount
         cycle.last_settled_time = max(cycle.last_settled_time, ms)
         cycle.funding_ids.append(str(row['id']))
-        _emit(events, account, row, 'funding', ms, amount, 'funding fee', f"{row['market']} funding, position {row['positionId']}")
+        description = f"{row['market']} funding {'received' if amount > 0 else 'paid'}"
+        _emit(events, account, row, 'funding', ms, amount, 'funding fee', description)
 
 
 def _check_open_position(cycle, live, metadata, expected, net):

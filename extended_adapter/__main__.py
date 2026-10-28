@@ -4,18 +4,18 @@ import json
 import os
 import sys
 from pathlib import Path
-from .core import ValidationError, convert, inspect_sources, write_outputs
+from .api import SnapshotError
+from .core import ValidationError
 
 
 def main():
     parser = argparse.ArgumentParser(description='Auditable Extended → Koinly local prototype')
     sub = parser.add_subparsers(dest='command', required=True)
-    inspect = sub.add_parser('inspect', help='Inspect schemas, coverage and summary identities')
-    inspect.add_argument('--input', required=True)
-    convert_parser = sub.add_parser('convert', help='Validate then export a flat-to-flat perpetual window')
-    convert_parser.add_argument('--input', required=True)
-    convert_parser.add_argument('--config', required=True)
-    convert_parser.add_argument('--output', required=True, help='New directory; never overwrites previous runs')
+    sync = sub.add_parser('sync', help='Fetch new API history, reconcile and export; prompts privately for API key')
+    sync.add_argument('--cache', required=True, help='Private cache directory for this account')
+    sync.add_argument('--config', required=True)
+    sync.add_argument('--output', required=True, help='New output directory for each run')
+    sync.add_argument('--full-refresh', action='store_true', help='Fetch all history again without using cached pages')
     fetch = sub.add_parser('fetch', help='Collect read-only API evidence; prompts privately for API key')
     fetch.add_argument('--output', required=True, help='New private snapshot directory')
     fetch.add_argument('--funding-start-ms', type=int, default=0)
@@ -28,14 +28,13 @@ def main():
     accounts.add_argument('--output', required=True)
     args = parser.parse_args()
     try:
-        if args.command == 'inspect':
-            print(json.dumps(inspect_sources(args.input), indent=2))
-        elif args.command == 'convert':
+        if args.command == 'sync':
+            from .sync import sync_account
             config = json.loads(Path(args.config).read_text())
-            events, reviews, report = convert(args.input, config)
-            write_outputs(args.output, events, reviews, report)
-            print(f"Validated {len(report['cycles'])} closed cycles; wrote {len(events)} Koinly perpetual events. "
-                  f"{len(reviews)} transfers require review. Output: {Path(args.output).resolve()}")
+            key = os.environ.get('EXTENDED_API_KEY') or getpass.getpass('Extended read-only API key (hidden): ')
+            report = sync_account(args.cache, config, args.output, key, full_refresh=args.full_refresh)
+            print(f"Reconciled and exported. Reused history: {report['sync']['reused_rows']}. "
+                  f"Output: {Path(args.output).resolve()}")
         elif args.command == 'fetch':
             from .api import collect_snapshot
             key = os.environ.get('EXTENDED_API_KEY') or getpass.getpass('Extended read-only API key (hidden): ')
@@ -57,7 +56,7 @@ def main():
             write_accounts(args.output, accounts, report)
             print(f"Exported {len(accounts)} account wallets; {report['matched_transfer_count']} exact transfer pairs; "
                   f"{len(report['unmatched_out_of_scope'])} counterparts outside scope. Output: {Path(args.output).resolve()}")
-    except (ValidationError, OSError, KeyError, ValueError) as exc:
+    except (ValidationError, SnapshotError, OSError, KeyError, ValueError) as exc:
         print(f'Conversion stopped: {exc}', file=sys.stderr)
         return 2
     return 0

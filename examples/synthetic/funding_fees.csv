@@ -1,3 +1,0 @@
-market,side,position_size,value,mark_price,funding_payment,rate,time
-DEMO-USD,SHORT,2,200,100,-0.03,-0.00015,2026-06-02T11:00:00.000Z
-DEMO-USD,SHORT,2,200,100,0.05,0.00025,2026-06-02T10:00:00.000Z

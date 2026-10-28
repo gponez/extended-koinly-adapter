@@ -1,11 +1,11 @@
 Date,Sent Amount,Sent Currency,Received Amount,Received Currency,Tag,Description,TxHash
-2026-01-01 00:00:01,,,100,USDC,,Extended deposit [extended:101:operation:1],extended:101:operation:1
-2026-01-01 00:00:02,50,USDC,40,NULL1,,Extended vault_deposit [extended:101:operation:2],extended:101:operation:2
-2026-01-01 00:00:10,0.02,USDC,,,futures fee,Extended DEMO-USD total execution fee (includes builder fee) [extended:101:fee:1],extended:101:fee:1
-2026-01-01 00:00:20,,,0.05,USDC,funding fee,"Extended DEMO-USD funding, position 99 [extended:101:funding:1]",extended:101:funding:1
-2026-01-01 00:00:25,0.03,USDC,,,funding fee,"Extended DEMO-USD funding, position 99 [extended:101:funding:2]",extended:101:funding:2
-2026-01-01 00:00:30,0.01,USDC,,,futures fee,Extended DEMO-USD total execution fee (includes builder fee) [extended:101:fee:2],extended:101:fee:2
-2026-01-01 00:00:30,,,3.000000,USDC,realized gain,Extended DEMO-USD realised PnL on 1 closed contracts [extended:101:pnl:2],extended:101:pnl:2
-2026-01-01 00:00:50,8,NULL1,10,USDC,,Extended vault_withdrawal [extended:101:operation:3],extended:101:operation:3
-2026-01-01 00:00:55,5,USDC,,,,Extended transfer [extended:101:operation:4],extended:101:operation:4
-2026-01-01 00:00:56,,,5,USDC,,Extended transfer [extended:101:operation:5],extended:101:operation:5
+2026-01-01 00:00:01,,,100,USDC,,Extended: Deposit of USDC,extended:101:operation:1
+2026-01-01 00:00:02,50,USDC,40,NULL1,,Extended: Deposited USDC into the vault; received EXT-XVS shares,extended:101:operation:2
+2026-01-01 00:00:10,0.02,USDC,,,futures fee,Extended: DEMO-USD trading fee,extended:101:fee:1
+2026-01-01 00:00:20,,,0.05,USDC,funding fee,Extended: DEMO-USD funding received,extended:101:funding:1
+2026-01-01 00:00:25,0.03,USDC,,,funding fee,Extended: DEMO-USD funding paid,extended:101:funding:2
+2026-01-01 00:00:30,0.01,USDC,,,futures fee,Extended: DEMO-USD trading fee,extended:101:fee:2
+2026-01-01 00:00:30,,,3.000000,USDC,realized gain,Extended: DEMO-USD realised trading profit,extended:101:pnl:2
+2026-01-01 00:00:50,8,NULL1,10,USDC,,Extended: Redeemed EXT-XVS shares for USDC,extended:101:operation:3
+2026-01-01 00:00:55,5,USDC,,,,Extended: Transfer of USDC to subaccount 202,extended:101:operation:4
+2026-01-01 00:00:56,,,5,USDC,,Extended: Transfer of USDC from subaccount 202,extended:101:operation:5

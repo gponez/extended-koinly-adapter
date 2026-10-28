@@ -102,14 +102,14 @@
       "koinly_symbol": "USDC",
       "is_vault_share": false,
       "l1Id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "label": "USD"
+      "label": "USDC"
     },
     "94": {
       "source_name": "XVS",
       "koinly_symbol": "NULL1",
       "is_vault_share": true,
       "l1Id": "synthetic-vault-share",
-      "label": "XVS"
+      "label": "Extended Vault Shares (EXT-XVS)"
     }
   },
   "opening_balance_evidence": "Synthetic demo starts empty.",

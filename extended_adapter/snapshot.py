@@ -9,6 +9,70 @@ REQUIRED = ('account', 'balance', 'spot_balances', 'markets', 'assets', 'open_po
 PAGED = {'trades', 'funding', 'positions_history', 'asset_operations', 'asset_operations_v2'}
 
 
+def _read_verified(root, page, name):
+    path = root / page['file']
+    if path.resolve().parent != root or path.is_symlink():
+        raise ValidationError('Snapshot page must be an ordinary file inside the snapshot directory')
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != page['sha256']:
+        raise ValidationError(f'{name}: source hash mismatch')
+    obj = json.loads(raw, parse_float=str)
+    if obj.get('status') != 'OK' or 'data' not in obj:
+        raise ValidationError(f'{name}: invalid response')
+    return obj
+
+
+def _verify_cache_join(root, name, source, rows):
+    """A cached suffix is reused evidence, not a new traversal of the API."""
+    cache = source.get('cache')
+    if cache is None:
+        if any(page.get('reused') for page in source['pages']):
+            raise ValidationError(f'{name}: cached pages lack overlap evidence')
+        return
+    if name not in ('trades', 'funding') or not isinstance(cache, dict):
+        raise ValidationError(f'{name}: unsupported history cache')
+    offset, boundary, reused = (cache.get(key) for key in ('probe_offset', 'new_rows', 'reused_rows'))
+    if (any(type(value) is not int for value in (offset, boundary, reused))
+            or not 0 <= offset <= boundary or reused <= 0 or boundary + reused != len(rows)):
+        raise ValidationError(f'{name}: invalid cache boundary')
+    fresh_rows, cached_rows, in_cache = 0, 0, False
+    for page in source['pages']:
+        if page.get('reused') is True:
+            in_cache = True
+            cached_rows += page['rows']
+        elif in_cache:
+            raise ValidationError(f'{name}: fresh page follows a cached page')
+        else:
+            fresh_rows += page['rows']
+    if fresh_rows != boundary or cached_rows != reused:
+        raise ValidationError(f'{name}: cache page counts disagree')
+    if any(isinstance(row['id'], bool) or not isinstance(row['id'], (str, int))
+           or not str(row['id']).isascii() or not str(row['id']).isdigit() for row in rows):
+        raise ValidationError(f'{name}: cache requires numeric IDs')
+    ids = [int(row['id']) for row in rows]
+    if any(a <= b for a, b in zip(ids, ids[1:])):
+        raise ValidationError(f'{name}: cached history is not in descending ID order')
+    joins = source.get('cache_joins', [])
+    current = {key: cache[key] for key in ('probe', 'probe_offset', 'new_rows')}
+    if not joins or current not in joins:
+        raise ValidationError(f'{name}: missing cache join history')
+    for join in joins:
+        offset, boundary = join.get('probe_offset'), join.get('new_rows')
+        if type(offset) is not int or type(boundary) is not int or not 0 <= offset <= boundary < len(rows):
+            raise ValidationError(f'{name}: invalid inherited cache boundary')
+        probe = _read_verified(root, join['probe'], name)
+        data, pagination = probe['data'], probe.get('pagination', {})
+        if (not isinstance(data, list) or pagination.get('count') != len(data)
+                or len(data) <= boundary - offset):
+            raise ValidationError(f'{name}: invalid cache overlap evidence')
+        if pagination.get('cursor') is None and offset + len(data) != len(rows):
+            raise ValidationError(f'{name}: terminal overlap omits cached history')
+        plain = [{key: value for key, value in row.items() if key not in ('_source', '_source_hash')}
+                 for row in rows[offset:offset + len(data)]]
+        if data != plain:
+            raise ValidationError(f'{name}: cache overlap does not match merged history')
+
+
 def load_snapshot(directory):
     root = Path(directory).resolve()
     manifest = json.loads((root / 'manifest.json').read_text())
@@ -25,15 +89,7 @@ def load_snapshot(directory):
         combined, singleton, seen = [], None, set()
         cursors = set()
         for page_index, page in enumerate(source['pages']):
-            path = root / page['file']
-            if path.resolve().parent != root or path.is_symlink():
-                raise ValidationError('Snapshot page must be an ordinary file inside the snapshot directory')
-            raw = path.read_bytes()
-            if hashlib.sha256(raw).hexdigest() != page['sha256']:
-                raise ValidationError(f'{name}: source hash mismatch')
-            obj = json.loads(raw, parse_float=str)
-            if obj.get('status') != 'OK' or 'data' not in obj:
-                raise ValidationError(f'{name}: invalid response')
+            obj = _read_verified(root, page, name)
             data = obj['data']
             if name in PAGED:
                 pagination = obj.get('pagination')
@@ -72,6 +128,7 @@ def load_snapshot(directory):
             terminal = obj.get('pagination')
             if not isinstance(terminal, dict) or terminal.get('cursor') is not None:
                 raise ValidationError(f'{name}: pagination did not reach its end')
+            _verify_cache_join(root, name, source, combined)
         result[name] = singleton if singleton is not None else combined
     if manifest['sources']['funding'].get('parameters', {}).get('startTime') != 0:
         raise ValidationError('Full conversion requires funding history from startTime=0')
